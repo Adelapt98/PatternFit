@@ -1,0 +1,15 @@
+{
+  "tolerance_mm": 1.0,
+  "seams": [
+    {
+      "name": "Front side seam",
+      "start": [20, 15],
+      "end": [20, 135]
+    },
+    {
+      "name": "Back side seam",
+      "start": [40, 20],
+      "end": [40, 141.5]
+    }
+  ]
+}
