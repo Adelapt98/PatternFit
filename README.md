@@ -21,4 +21,18 @@ python3 patternfit.py examples/curved.json
 python3 -m unittest -v
 ```
 
-The curved example compares a two-segment path with a straight reference strip of the same length. The checker compares total lengths. See [ROADMAP.md](ROADMAP.md) for the rest of the project.
+The curved example compares a two-segment path with a straight reference strip of the same length. Fixtures without pairing data compare total lengths.
+
+## Compare seams by notch
+
+```sh
+python3 patternfit.py examples/notched.json
+```
+
+This example intentionally exits with status 1. Both seams are 100 mm long, but the interval from the shoulder notch to the end is 10 mm shorter on the second seam. The first interval passes because its 10 mm difference is declared as intended ease.
+
+- Each seam can list `notches` with an `id` and a `distance_mm` measured along that seam from its authored start. List them in increasing distance. IDs must be unique within each seam. The checker supplies the reserved endpoints `start` and `end`.
+- Set `pairing.reverse_second` to `true` when the second seam is authored in the opposite direction. In sewing order, the two seams must have the same sequence of IDs.
+- Each optional `pairing.ease` entry names adjacent boundaries with `from` and `to` in sewing order and an `ease_mm` value. Positive ease means the second seam is expected to be longer. The residual is the measured second length minus the first length minus intended ease. Each interval must pass the fixture tolerance.
+
+See [ROADMAP.md](ROADMAP.md) for the remaining work.

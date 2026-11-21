@@ -8,7 +8,7 @@ The main challenge is correspondence along a seam. Two seams can have identical 
 
 ## Current baseline
 
-The Python command compares the total length of two stitch lines. It supports straight seams and continuous paths of line and quadratic Bézier segments. It includes a legacy straight-seam fixture, a curved fixture and tests against an analytic curve length. There is no pattern document editor yet.
+The Python command compares two stitch lines by total length or by named notch intervals. It can reverse the second seam and account for signed ease in each interval. Notches currently use absolute distances along the authored path. It supports straight seams and continuous paths of line and quadratic Bézier segments. It includes a legacy straight-seam fixture, a curved fixture and tests against an analytic curve length. There is no pattern document editor yet.
 
 ## Milestones
 
@@ -22,8 +22,8 @@ The Python command compares the total length of two stitch lines. It supports st
 ### 2. Walk paired seams by notch interval
 
 - Add arc-length lookup and its inverse so a point on either path can be located by distance along the seam. Normalize traversal direction at the pairing level so reversed pieces compare correctly.
-- Match explicit notch IDs, then measure each interval between matched notches, including the start and end intervals.
-- Store intended ease per interval with a signed convention. Report measured lengths, intended ease and remaining mismatch separately.
+- Reuse the existing interval matcher and signed ease calculation after converting segment-anchored notches to distances. Include the start and end intervals in the report.
+- Preserve notch identities when editing or grading changes the length of the seam.
 - **Acceptance** — fixtures cover reversed paths, a seam split across several segments, missing or misordered notches, equal totals with mismatched intervals, and intentional ease. A failing result identifies the piece, seam and bounding notches.
 
 ### 3. Generate cut lines and seam allowances
