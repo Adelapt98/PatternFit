@@ -50,3 +50,7 @@ See [ROADMAP.md](ROADMAP.md) for the remaining work.
 ## Continue development
 
 Start with the development sessions in [ROADMAP.md](ROADMAP.md). The first session adds a versioned pattern document and stable piece and segment IDs. Run the tests to establish a baseline before changing the fixture format.
+
+## License
+
+[MIT](LICENSE) · Copyright (c) 2026 [Adelapt98](https://github.com/Adelapt98).
