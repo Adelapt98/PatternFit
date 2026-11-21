@@ -46,3 +46,7 @@ See [ROADMAP.md](ROADMAP.md) for the remaining work.
 | `examples/notched.json` | Equal total lengths hide a failing notch interval. | 1 |
 | `examples/notched-with-ease.json` | A 10 mm difference is intentional and both intervals pass. | 0 |
 | `examples/notched-missing-counterpart.json` | A missing matching notch makes the pairing invalid. | 2 |
+
+## Continue development
+
+Start with the development sessions in [ROADMAP.md](ROADMAP.md). The first session adds a versioned pattern document and stable piece and segment IDs. Run the tests to establish a baseline before changing the fixture format.
