@@ -1,6 +1,6 @@
 import unittest
 
-from seam_matching import paired_intervals, seam_boundaries
+from seam_matching import compare_intervals, paired_intervals, seam_boundaries
 
 
 class BoundaryTests(unittest.TestCase):
@@ -31,3 +31,19 @@ class IntervalTests(unittest.TestCase):
         first = [("start", 0), ("A", 40), ("end", 100)]
         with self.assertRaisesRegex(ValueError, "same notch IDs"):
             list(paired_intervals(first, [("start", 0), ("end", 100)]))
+
+
+class EaseTests(unittest.TestCase):
+    def test_signed_ease_accounts_for_expected_difference(self):
+        first = [("start", 0), ("A", 40), ("end", 100)]
+        second = [("start", 0), ("A", 50), ("end", 100)]
+        measured = list(compare_intervals(first, second, {("start", "A"): 10}))
+        self.assertEqual(measured, [
+            ("start", "A", 40, 50, 10, 0),
+            ("A", "end", 60, 50, 0, -10),
+        ])
+
+    def test_rejects_ease_for_nonadjacent_boundaries(self):
+        boundaries = [("start", 0), ("A", 40), ("end", 100)]
+        with self.assertRaisesRegex(ValueError, "unknown intervals"):
+            list(compare_intervals(boundaries, boundaries, {("start", "end"): 5}))

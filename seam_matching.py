@@ -31,3 +31,16 @@ def paired_intervals(first, second):
         first, first[1:], second, second[1:]
     ):
         yield start, end, a_end - a_start, b_end - b_start
+
+
+def compare_intervals(first, second, ease_by_interval):
+    """Yield each interval's measurements, intended ease and residual mismatch."""
+    intervals = list(paired_intervals(first, second))
+    unknown = ease_by_interval.keys() - {(start, end) for start, end, _, _ in intervals}
+    if unknown:
+        raise ValueError(f"ease references unknown intervals: {sorted(unknown)!r}")
+    for start, end, a_length, b_length in intervals:
+        ease = ease_by_interval.get((start, end), 0.0)
+        if not math.isfinite(ease):
+            raise ValueError(f"ease for {start!r} to {end!r} must be finite")
+        yield start, end, a_length, b_length, ease, (b_length - a_length) - ease
