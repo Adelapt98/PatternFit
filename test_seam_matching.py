@@ -1,6 +1,6 @@
 import unittest
 
-from seam_matching import seam_boundaries
+from seam_matching import paired_intervals, seam_boundaries
 
 
 class BoundaryTests(unittest.TestCase):
@@ -16,3 +16,18 @@ class BoundaryTests(unittest.TestCase):
         for second in ({"id": "A", "distance_mm": 30}, {"id": "B", "distance_mm": 10}):
             with self.subTest(second=second), self.assertRaises(ValueError):
                 seam_boundaries([first, second], 100)
+
+
+class IntervalTests(unittest.TestCase):
+    def test_equal_totals_can_hide_opposing_interval_differences(self):
+        first = [("start", 0), ("A", 40), ("end", 100)]
+        second = [("start", 0), ("A", 50), ("end", 100)]
+        self.assertEqual(list(paired_intervals(first, second)), [
+            ("start", "A", 40, 50),
+            ("A", "end", 60, 50),
+        ])
+
+    def test_rejects_missing_counterpart(self):
+        first = [("start", 0), ("A", 40), ("end", 100)]
+        with self.assertRaisesRegex(ValueError, "same notch IDs"):
+            list(paired_intervals(first, [("start", 0), ("end", 100)]))

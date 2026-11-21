@@ -21,3 +21,13 @@ def seam_boundaries(notches, length, *, reverse=False):
             (name, length - distance) for name, distance in reversed(boundaries[1:])
         ]
     return [*boundaries, ("end", length)]
+
+
+def paired_intervals(first, second):
+    """Yield bounding IDs and measured lengths for each paired interval."""
+    if [name for name, _ in first] != [name for name, _ in second]:
+        raise ValueError("paired seams must have the same notch IDs in sewing order")
+    for (start, a_start), (end, a_end), (_, b_start), (_, b_end) in zip(
+        first, first[1:], second, second[1:]
+    ):
+        yield start, end, a_end - a_start, b_end - b_start
