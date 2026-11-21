@@ -36,3 +36,13 @@ This example intentionally exits with status 1. Both seams are 100 mm long, but 
 - Each optional `pairing.ease` entry names adjacent boundaries with `from` and `to` in sewing order and an `ease_mm` value. Positive ease means the second seam is expected to be longer. The residual is the measured second length minus the first length minus intended ease. Each interval must pass the fixture tolerance.
 
 See [ROADMAP.md](ROADMAP.md) for the remaining work.
+
+## Example outcomes
+
+| Fixture | What it demonstrates | Exit code |
+| --- | --- | --- |
+| `examples/bodice.json` | Straight seams differ by 1.50 mm and exceed tolerance. | 1 |
+| `examples/curved.json` | A curve joined to a line matches the reference length. | 0 |
+| `examples/notched.json` | Equal total lengths hide a failing notch interval. | 1 |
+| `examples/notched-with-ease.json` | A 10 mm difference is intentional and both intervals pass. | 0 |
+| `examples/notched-missing-counterpart.json` | A missing matching notch makes the pairing invalid. | 2 |
