@@ -5,6 +5,8 @@ import json
 import math
 from pathlib import Path
 
+from seam_matching import compare_intervals, seam_boundaries
+
 
 def midpoint(a, b):
     return tuple(x / 2 + y / 2 for x, y in zip(a, b))
@@ -64,6 +66,25 @@ def seam_length(seam):
     return length
 
 
+def fixture_intervals(seams, lengths, pairing):
+    reverse_second = pairing.get("reverse_second", False)
+    if not isinstance(reverse_second, bool):
+        raise ValueError("reverse_second must be a boolean")
+
+    first, second = seams
+    first_boundaries = seam_boundaries(first.get("notches", []), lengths[0])
+    second_boundaries = seam_boundaries(
+        second.get("notches", []), lengths[1], reverse=reverse_second
+    )
+    ease_by_interval = {}
+    for entry in pairing.get("ease", []):
+        interval = (entry["from"], entry["to"])
+        if interval in ease_by_interval:
+            raise ValueError(f"duplicate ease for interval: {interval!r}")
+        ease_by_interval[interval] = entry["ease_mm"]
+    return list(compare_intervals(first_boundaries, second_boundaries, ease_by_interval))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("fixture", type=Path, help="Path to the JSON fixture")
@@ -77,14 +98,32 @@ def main():
         if not math.isfinite(tolerance) or tolerance < 0:
             raise ValueError("tolerance must be finite and nonnegative")
         names = (first["name"], second["name"])
+        intervals = None
+        if "pairing" in fixture or "notches" in first or "notches" in second:
+            pairing = fixture.get("pairing", {})
+            if not isinstance(pairing, dict):
+                raise ValueError("pairing must be an object")
+            intervals = fixture_intervals((first, second), lengths, pairing)
     except (OSError, KeyError, TypeError, ValueError, OverflowError) as error:
         parser.error(f"invalid fixture: {error}")
 
-    difference = abs(lengths[0] - lengths[1])
     for name, length in zip(names, lengths):
         print(f"{name}: {length:.2f} mm")
-    print(f"Difference: {difference:.2f} mm (tolerance: {tolerance:.2f} mm)")
-    within_tolerance = difference <= tolerance
+    if intervals is None:
+        difference = abs(lengths[0] - lengths[1])
+        print(f"Difference: {difference:.2f} mm (tolerance: {tolerance:.2f} mm)")
+        within_tolerance = difference <= tolerance
+    else:
+        print(f"Interval tolerance: {tolerance:.2f} mm")
+        within_tolerance = True
+        for start, end, first_length, second_length, ease, residual in intervals:
+            passed = abs(residual) <= tolerance
+            within_tolerance &= passed
+            status = "OK" if passed else "Outside tolerance"
+            print(
+                f"{start} → {end}: {first_length:.2f} / {second_length:.2f} mm, "
+                f"ease {ease:+.2f} mm, residual {residual:+.2f} mm ({status})"
+            )
     print("Within tolerance" if within_tolerance else "Outside tolerance")
     return 0 if within_tolerance else 1
 

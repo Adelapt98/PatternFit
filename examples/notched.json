@@ -1,0 +1,21 @@
+{
+  "tolerance_mm": 1,
+  "seams": [
+    {
+      "name": "Armhole",
+      "start": [0, 0],
+      "end": [0, 100],
+      "notches": [{"id": "shoulder", "distance_mm": 40}]
+    },
+    {
+      "name": "Sleeve cap",
+      "start": [0, 100],
+      "end": [0, 0],
+      "notches": [{"id": "shoulder", "distance_mm": 50}]
+    }
+  ],
+  "pairing": {
+    "reverse_second": true,
+    "ease": [{"from": "start", "to": "shoulder", "ease_mm": 10}]
+  }
+}
